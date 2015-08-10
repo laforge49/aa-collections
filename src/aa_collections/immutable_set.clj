@@ -1,6 +1,16 @@
-(ns aa-collections.immutable-set
-  (:import clojure.lang.IPersistentSet))
+(ns aa-collections.immutable-set)
 
 (deftype AAImmutableSet []
-  ;IPersistentSet
+  clojure.lang.IPersistentSet
+  (seq [_] nil)
+  (count [_] 0)
+  (cons [_ o] nil)
+  (empty [_] nil)
+  (equiv [_ o] false)
+  (disjoin [_ key] nil)
+  (contains [_ key] false)
+  (get [_ key] nil)
+
+  clojure.lang.Reversible
+  (rseq [_] nil)
   )
