@@ -8,5 +8,8 @@
 (println (instance? Reversible x))
 (println (instance? IPersistentSet x))
 (println (instance? IPersistentCollection x))
+(println (isNil x))
+(println (isNil nil))
 (println (count x))
 (println (seq x))
+(println (.-level x))
