@@ -1,6 +1,6 @@
 (ns aa-collections.immutable-set)
 
-(deftype AAImmutableSet []
+(deftype AAImmutableSet [level left right value]
   clojure.lang.IPersistentSet
   (seq [_] nil)
   (count [_] 0)
