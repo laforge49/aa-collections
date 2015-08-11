@@ -1,10 +1,13 @@
-(ns aa-collections.immutable-set)
+(ns aa-collections.immutable-set
+  (:import (clojure.lang RT)))
 
-(defprotocol AAImmutableSetInternals
-  (skew [this])
-  (split [this]))
+(defn isNil [x] (or (nil? x) (zero? (.-level x))))
+
+(defprotocol AAImmutableSetInternal
+  )
 
 (deftype AAImmutableSet [level left right value comparator]
+  AAImmutableSetInternal
   clojure.lang.IPersistentSet
   (seq [_] nil)
   (count [_] 0)
@@ -17,8 +20,4 @@
 
   clojure.lang.Reversible
   (rseq [_] nil)
-
-  AAImmutableSetInternals
-  (skew [this] nil)
-  (split [this] nil)
   )
