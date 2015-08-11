@@ -4,7 +4,7 @@
   (skew [this])
   (split [this]))
 
-(deftype AAImmutableSet [level left right value]
+(deftype AAImmutableSet [level left right value comparator]
   clojure.lang.IPersistentSet
   (seq [_] nil)
   (count [_] 0)
