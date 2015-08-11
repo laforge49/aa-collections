@@ -3,7 +3,7 @@
             [aa-collections.immutable-set :refer :all])
   (:import (clojure.lang Reversible IPersistentSet IPersistentCollection RT)))
 
-(def x (->AAImmutableSet 0 nil nil nil RT/DEFAULT_COMPARATOR))
+(def x (aa-empty-set))
 
 (println (instance? Reversible x))
 (println (instance? IPersistentSet x))
@@ -13,3 +13,4 @@
 (println (count x))
 (println (seq x))
 (println (.-level x))
+(println x (nixnay x))

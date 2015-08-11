@@ -3,11 +3,16 @@
 
 (defn isNil [x] (or (nil? x) (zero? (.-level x))))
 
-(defprotocol AAImmutableSetInternal
+(defprotocol AASetInternal
+  (nixnay [this])
   )
 
-(deftype AAImmutableSet [level left right value comparator]
-  AAImmutableSetInternal
+(deftype AASet [level left right value comparator nada]
+  AASetInternal
+  (nixnay [this]
+    (if (isNil this)
+      this
+      nada))
   clojure.lang.IPersistentSet
   (seq [_] nil)
   (count [_] 0)
@@ -21,3 +26,7 @@
   clojure.lang.Reversible
   (rseq [_] nil)
   )
+
+(defn aa-empty-set
+  ([] (aa-empty-set RT/DEFAULT_COMPARATOR))
+  ([comparator] (->AASet 0 nil nil nil comparator nil)))
