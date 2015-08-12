@@ -9,6 +9,10 @@
   ([] (aa-empty-set RT/DEFAULT_COMPARATOR))
   ([comparator] (->AASet nil 0 nil nil comparator nil)))
 
+(defn- inew-node
+  [this value level left right]
+  (->AASet value level left right (.-comparator this) (.empty this)))
+
 (defn- irevise
   [this & args]
   (let [m (apply array-map args)]
@@ -47,6 +51,7 @@
     this))
 
 (defprotocol AASetInternal
+  (new-node [this value level left right])
   (revise [this & args])
   (skew [this])
   (split [this])
@@ -54,6 +59,7 @@
 
 (deftype AASet [value level left right comparator nada]
   AASetInternal
+  (new-node [this val lvl l r] (inew-node this val lvl l r))
   (revise [this & args] (irevise this args))
   (skew [this] (iskew this))
   (split [this] (isplit this))
