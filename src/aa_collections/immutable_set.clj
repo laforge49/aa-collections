@@ -1,51 +1,22 @@
 (ns aa-collections.immutable-set
   (:import (clojure.lang RT)))
 
+(declare ->AASet)
+
 (defn nada? [x] (or (nil? x) (zero? (.-level x))))
-
-(defprotocol AASetInternal
-  (revise [this & args])
-  (skew [this])
-  (split [this])
-  )
-
-(declare irevise iskew isplit)
-
-(deftype AASet [level left right value comparator nada]
-  AASetInternal
-  (revise [this & args] (irevise this args))
-  (skew [this] (iskew this))
-  (split [this] (isplit this))
-
-  clojure.lang.IPersistentSet
-  (seq [_] nil)
-  (count [_] 0)
-  (cons [_ o] nil)
-  (empty [this]
-    (if (zero? level)
-      this
-      nada))
-  (equiv [_ o] false)
-  (disjoin [_ key] nil)
-  (contains [_ key] false)
-  (get [_ key] nil)
-
-  clojure.lang.Reversible
-  (rseq [_] nil)
-  )
 
 (defn aa-empty-set
   ([] (aa-empty-set RT/DEFAULT_COMPARATOR))
-  ([comparator] (->AASet 0 nil nil nil comparator nil)))
+  ([comparator] (->AASet nil 0 nil nil comparator nil)))
 
 (defn- irevise
   [this & args]
   (let [m (apply array-map args)]
     (->AASet
+      (get m :value (.-value this))
       (get m :level (.-level this))
       (get m :left (.-left this))
       (get m :right (.-right this))
-      (get m :value (.-value this))
       (.-comparator this)
       (.-nada this))))
 
@@ -74,3 +45,32 @@
       (.revise r :left (.revise this :right (.-left r))))
     :else
     this))
+
+(defprotocol AASetInternal
+  (revise [this & args])
+  (skew [this])
+  (split [this])
+  )
+
+(deftype AASet [value level left right comparator nada]
+  AASetInternal
+  (revise [this & args] (irevise this args))
+  (skew [this] (iskew this))
+  (split [this] (isplit this))
+
+  clojure.lang.IPersistentSet
+  (seq [_] nil)
+  (count [_] 0)
+  (cons [_ o] nil)
+  (empty [this]
+    (if (zero? level)
+      this
+      nada))
+  (equiv [_ o] false)
+  (disjoin [_ key] nil)
+  (contains [_ key] false)
+  (get [_ key] nil)
+
+  clojure.lang.Reversible
+  (rseq [_] nil)
+  )
