@@ -1,6 +1,15 @@
 (ns aa-collections.immutable-set
   (:import (clojure.lang RT)))
 
+(defprotocol AASetInternal
+  (left-node [this])
+  (right-node [this])
+  (new-node [this value level left right])
+  (revise [this & args])
+  (skew [this])
+  (split [this])
+  )
+
 (declare ->AASet)
 
 (defn nada? [x] (or (nil? x) (zero? (.-level x))))
@@ -11,7 +20,7 @@
 
 (defn- inew-node
   [this value level left right]
-  (->AASet value level left right (.-comparator this) (.empty this)))
+  (->AASet value level left right (.-comparator this) (empty this)))
 
 (defn- irevise
   [this & args]
@@ -50,15 +59,28 @@
     :else
     this))
 
-(defprotocol AASetInternal
-  (new-node [this value level left right])
-  (revise [this & args])
-  (skew [this])
-  (split [this])
+(defn- iinsert
+  [this x]
+  (if (nada? this)
+    (new-node this x 1 nil nil)
+    (let [c (.compare (.-comparator this) x (.-value this))]
+      (.split (.skeq (cond
+        (< c 0)
+        (.revise this :left (iinsert (left-node this) x))
+        (> c 0)
+        (.revise this :right (iinsert (right-node this) x)))))))
   )
 
 (deftype AASet [value level left right comparator nada]
   AASetInternal
+  (left-node [this]
+    (if (nada? left)
+      (empty this)
+      left))
+  (right-node [this]
+    (if (nada? right)
+      (empty this)
+      right))
   (new-node [this val lvl l r] (inew-node this val lvl l r))
   (revise [this & args] (irevise this args))
   (skew [this] (iskew this))
@@ -67,7 +89,7 @@
   clojure.lang.IPersistentSet
   (seq [_] nil)
   (count [_] 0)
-  (cons [_ o] nil)
+  (cons [this x] (iinsert this x))
   (empty [this]
     (if (zero? level)
       this
