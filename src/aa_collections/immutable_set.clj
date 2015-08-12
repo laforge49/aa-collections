@@ -4,14 +4,16 @@
 (defn nada? [x] (or (nil? x) (zero? (.-level x))))
 
 (defprotocol AASetInternal
+  (revise [this & args])
   (skew [this])
   (split [this])
   )
 
-(declare iskew isplit)
+(declare irevise iskew isplit)
 
 (deftype AASet [level left right value comparator nada]
   AASetInternal
+  (revise [this & args] (irevise this args))
   (skew [this] (iskew this))
   (split [this] (isplit this))
 
@@ -36,6 +38,17 @@
   ([] (aa-empty-set RT/DEFAULT_COMPARATOR))
   ([comparator] (->AASet 0 nil nil nil comparator nil)))
 
+(defn- irevise
+  [this & args]
+  (let [m (apply array-map args)]
+    (->AASet
+      (get m :level (.-level this))
+      (get m :left (.-left this))
+      (get m :right (.-right this))
+      (get m :value (.-value this))
+      (.-comparator this)
+      (.-nada this))))
+
 (defn- iskew
   [this]
   (cond
@@ -45,19 +58,7 @@
     this
     (= (.-level (.-left this)) (.-level this))
     (let [l (.-left this)]
-      (->AASet
-        (.-level l)
-        (.-left l)
-        (->AASet
-          (.-level this)
-          (.-right l)
-          (.-right this)
-          (.-value this)
-          (.-comparator this)
-          (.-nada this))
-        (.-value l)
-        (.-comparator l)
-        (.-nada l)))
+      (.revise l :right (.revise this :left (.-right l))))
     :else
     this))
 
@@ -70,18 +71,6 @@
     this
     (= (.-level this) (.-level (.-right (.-right this))))
     (let [r (.-right this)]
-      (->AASet
-        (.-level r)
-        (->AASet
-          (.-level this)
-          (.-left this)
-          (.-left r)
-          (.-value this)
-          (.-comparator this)
-          (.-nada this))
-        (.-right r)
-        (.-value r)
-        (.-comparator r)
-        (.-nada r)))
+      (.revise r :left (.revise this :right (.-left r))))
     :else
     this))

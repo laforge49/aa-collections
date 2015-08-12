@@ -16,3 +16,4 @@
 (println x (empty x))
 (println (skew x))
 (println (split x))
+(println (revise x :level 1))
