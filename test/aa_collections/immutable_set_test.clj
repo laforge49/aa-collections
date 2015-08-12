@@ -15,3 +15,4 @@
 (println (.-level x))
 (println x (empty x))
 (println (skew x))
+(println (split x))

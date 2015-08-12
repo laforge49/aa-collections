@@ -5,13 +5,15 @@
 
 (defprotocol AASetInternal
   (skew [this])
+  (split [this])
   )
 
-(declare iskew)
+(declare iskew isplit)
 
 (deftype AASet [level left right value comparator nada]
   AASetInternal
   (skew [this] (iskew this))
+  (split [this] (isplit this))
 
   clojure.lang.IPersistentSet
   (seq [_] nil)
@@ -56,5 +58,30 @@
         (.-value l)
         (.-comparator l)
         (.-nada l)))
+    :else
+    this))
+
+(defn- isplit
+  [this]
+  (cond
+    (nada? this)
+    this
+    (or (nada? (.-right this)) (nada? (.-right (.-right this))))
+    this
+    (= (.-level this) (.-level (.-right (.-right this))))
+    (let [r (.-right this)]
+      (->AASet
+        (.-level r)
+        (->AASet
+          (.-level this)
+          (.-left this)
+          (.-left r)
+          (.-value this)
+          (.-comparator this)
+          (.-nada this))
+        (.-right r)
+        (.-value r)
+        (.-comparator r)
+        (.-nada r)))
     :else
     this))
