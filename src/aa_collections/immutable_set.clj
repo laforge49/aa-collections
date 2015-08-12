@@ -46,7 +46,7 @@
     this
     (= (.-level this) (.-level (.-right (.-right this))))
     (let [r (.-right this)]
-      (.revise r :left (.revise this :right (.-left r))))
+      (.revise r :level (+ (.-level r) 1) :left (.revise this :right (.-left r))))
     :else
     this))
 
