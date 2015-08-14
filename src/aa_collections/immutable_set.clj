@@ -1,7 +1,7 @@
 (ns aa-collections.immutable-set
   (:import (clojure.lang RT)))
 
-(defprotocol AASetInternal
+(defprotocol AASetNodeInternal
   (left-node [this])
   (right-node [this])
   (new-node [this value level left right])
@@ -10,22 +10,22 @@
   (split [this])
   )
 
-(declare ->AASet)
+(declare ->AASetNode)
 
 (defn nada? [x] (or (nil? x) (zero? (.-level x))))
 
 (defn aa-empty-set
   ([] (aa-empty-set RT/DEFAULT_COMPARATOR))
-  ([comparator] (->AASet nil 0 nil nil comparator nil)))
+  ([comparator] (->AASetNode nil 0 nil nil comparator nil)))
 
 (defn- inew-node
   [this value level left right]
-  (->AASet value level left right (.-comparator this) (empty this)))
+  (->AASetNode value level left right (.-comparator this) (empty this)))
 
 (defn- irevise
   [this & args]
   (let [m (apply array-map args)]
-    (->AASet
+    (->AASetNode
       (get m :value (.-value this))
       (get m :level (.-level this))
       (get m :left (.-left this))
@@ -71,8 +71,8 @@
         (.revise this :right (iinsert (right-node this) x)))))))
   )
 
-(deftype AASet [value level left right comparator nada]
-  AASetInternal
+(deftype AASetNode [value level left right comparator nada]
+  AASetNodeInternal
   (left-node [this]
     (if (nada? left)
       (empty this)
