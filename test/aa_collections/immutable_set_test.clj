@@ -18,4 +18,3 @@
 (println (split x))
 (println (revise x :level 1))
 (println (new-node x nil 0 nil nil))
-(println "conj" (conj x 1))

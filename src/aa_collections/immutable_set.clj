@@ -8,6 +8,7 @@
   (revise [this & args])
   (skew [this])
   (split [this])
+  (insert [this x])
   )
 
 (declare ->AASetNode)
@@ -85,11 +86,12 @@
   (revise [this & args] (irevise this args))
   (skew [this] (iskew this))
   (split [this] (isplit this))
+  (insert [this x] (iinsert this x))
 
   clojure.lang.IPersistentSet
   (seq [_] nil)
   (count [_] 0)
-  (cons [this x] (iinsert this x))
+  (cons [this x] nil)
   (empty [this]
     (if (zero? level)
       this
