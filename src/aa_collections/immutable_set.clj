@@ -1,5 +1,5 @@
 (ns aa-collections.immutable-set
-  (:import (clojure.lang RT Counted)))
+  (:import (clojure.lang RT Counted ISeq)))
 
 (defprotocol IAASetNode
   (sfirst [this])
@@ -131,6 +131,23 @@
 
   Counted
   (count [this] cnt)
+  )
+
+(deftype aaSetSeq [node last]
+  ISeq
+  (first [this] nil)
+  (next [this] nil)
+  (more [this] nil)
+  (cons [this x] nil)
+  (count [this] 0)
+  (empty [this]
+    (if (nada? node)
+      node
+      (.-nada node)))
+  (equiv [this o] false)
+  (seq [this] this)
+
+  Counted
   )
 
 (deftype AASet [comparator nada]
