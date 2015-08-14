@@ -3,7 +3,7 @@
             [aa-collections.immutable-set :refer :all])
   (:import (clojure.lang Reversible IPersistentSet IPersistentCollection)))
 
-(def x (aa-empty-set))
+(def x (aa-empty-set-node))
 
 (println (instance? Reversible x))
 (println (instance? IPersistentSet x))

@@ -14,8 +14,8 @@
 
 (defn nada? [x] (or (nil? x) (zero? (.-level x))))
 
-(defn aa-empty-set
-  ([] (aa-empty-set RT/DEFAULT_COMPARATOR))
+(defn aa-empty-set-node
+  ([] (aa-empty-set-node RT/DEFAULT_COMPARATOR))
   ([comparator] (->AASetNode nil 0 nil nil comparator nil)))
 
 (defn- inew-node
