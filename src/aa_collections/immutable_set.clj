@@ -5,6 +5,7 @@
 (defprotocol IAASetNode
   (sfirst [this])
   (snext [this x])
+  (sget [this x])
   (left-node [this])
   (right-node [this])
   (new-node [this value level left right cnt])
@@ -108,6 +109,14 @@
                   (if (nil? n)
                     value
                     n))))))
+  (sget [this x]
+    (if (nada? this)
+      nil
+      (let [c (.compare comparator x value)]
+        (cond
+        (zero? c) x
+        (> c 0) (sget (right-node this) x)
+        :else (sget (left-node this) x)))))
   (left-node [this]
     (if (nada? left)
       (emty this)
@@ -190,14 +199,14 @@
   (count [_]
     (count node))
   (cons [this x]
-    (if (.contains this x)
+    (if (.sget node x)
       this
       (->AASet (.insert node x))))
-  (empty [this] nil)
+  (empty [this] (.empty node))
   (equiv [_ o] false)
   (disjoin [_ key] nil)
-  (contains [_ key] false)
-  (get [_ key] nil)
+  (contains [_ key] (.sget node key))
+  (get [_ key] (.sget node key))
 
   Counted
   )

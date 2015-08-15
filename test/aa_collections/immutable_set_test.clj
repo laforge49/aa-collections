@@ -53,4 +53,5 @@
 (println (.count setx))
 (println (conj setx 6))
 (println (conj setx 0))
-
+(println (get setx 4))
+(println (get setx 6))
