@@ -25,7 +25,7 @@
 (println (snext x12345 3))
 (println (snext x12345 4))
 (println (snext x12345 5))
-(def s0 (->AASetSeq x12345 nil))
+(def s0 (->AASetSeq x12345 nil (count x12345)))
 (println (first s0))
 (def s1 (.more s0))
 (println (first s1))
@@ -37,5 +37,8 @@
 (println (first s4))
 (def s5 (.more s4))
 (println (first s5))
-
-
+(println (next s4))
+(println (.count s0))
+(println (.count s1))
+(println (.count s4))
+(println (.count s5))
