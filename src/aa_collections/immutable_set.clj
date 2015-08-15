@@ -180,10 +180,12 @@
   Sequential
   )
 
-(deftype AASet [comparator nada]
+(deftype AASet [node comparator nada]
   clojure.lang.IPersistentSet
-  (seq [_] nil)
-  (count [_] 0)
+  (seq [_]
+    (->AASetSeq node nil (count node)))
+  (count [_]
+    (count node))
   (cons [this x] nil)
   (empty [this] nil)
   (equiv [_ o] false)
