@@ -1,5 +1,5 @@
 (ns aa-collections.immutable-set
-  (:import (clojure.lang RT Counted ISeq Sequential)
+  (:import (clojure.lang RT Counted ISeq Sequential IPersistentCollection Seqable)
            (java.util List)))
 
 (defprotocol IAASetNode
@@ -180,13 +180,19 @@
   Sequential
   )
 
-(deftype AASet [node comparator nada]
+(declare ->AASet)
+
+(deftype AASet [node]
+
   clojure.lang.IPersistentSet
   (seq [_]
     (->AASetSeq node nil (count node)))
   (count [_]
     (count node))
-  (cons [this x] nil)
+  (cons [this x]
+    (if (.contains this x)
+      this
+      (->AASet (.insert node x))))
   (empty [this] nil)
   (equiv [_ o] false)
   (disjoin [_ key] nil)

@@ -48,3 +48,9 @@
 (println (= s0 (list 1 2 3 4 5)))
 (println (= (list 1 2 3 4 5) s0))
 (println s0)
+(def setx (->AASet x12345))
+(println setx)
+(println (.count setx))
+(println (conj setx 6))
+(println (conj setx 0))
+
