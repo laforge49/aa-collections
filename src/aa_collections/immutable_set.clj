@@ -133,11 +133,20 @@
   (count [this] cnt)
   )
 
-(deftype aaSetSeq [node last]
+(declare ->AASetSeq)
+
+(deftype AASetSeq [node last]
   ISeq
-  (first [this] nil)
+  (first [this]
+    (if (nil? last)
+      (sfirst node)
+      (snext node last)))
   (next [this] nil)
-  (more [this] nil)
+  (more [this]
+    (let [f (first this)]
+      (if (nil? f)
+        this
+        (->AASetSeq node f))))
   (cons [this x] nil)
   (count [this] 0)
   (empty [this]

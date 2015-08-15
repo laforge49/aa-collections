@@ -25,5 +25,17 @@
 (println (snext x12345 3))
 (println (snext x12345 4))
 (println (snext x12345 5))
+(def s0 (->AASetSeq x12345 nil))
+(println (first s0))
+(def s1 (.more s0))
+(println (first s1))
+(def s2 (.more s1))
+(println (first s2))
+(def s3 (.more s2))
+(println (first s3))
+(def s4 (.more s3))
+(println (first s4))
+(def s5 (.more s4))
+(println (first s5))
 
 
