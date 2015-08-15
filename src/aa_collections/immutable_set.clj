@@ -1,5 +1,6 @@
 (ns aa-collections.immutable-set
-  (:import (clojure.lang RT Counted ISeq)))
+  (:import (clojure.lang RT Counted ISeq Sequential)
+           (java.util List)))
 
 (defprotocol IAASetNode
   (sfirst [this])
@@ -159,10 +160,24 @@
     (if (nada? node)
       node
       (.-nada node)))
-  (equiv [this o] false)
+  (equiv [this o]
+    (if (identical? this o)
+      true)
+    (if (not (or (instance? Sequential o) (instance? List o)))
+      false)
+    (loop [m (seq o)
+          n this]
+      (let [fm (first m)
+            fn (first n)]
+        (cond
+          (not= fm fn) false
+          (nil? fm) true
+          :else (recur (.more m) (.more n))))))
   (seq [this] this)
 
   Counted
+
+  Sequential
   )
 
 (deftype AASet [comparator nada]
