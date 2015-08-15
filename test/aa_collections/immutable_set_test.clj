@@ -45,4 +45,6 @@
 (println (sorted-set 1 2 3 4 5))
 (println (= s0 (seq (sorted-set 1 2 3 4 5))))
 (println (= (seq (sorted-set 1 2 3 4 5)) s0))
+(println (= s0 (list 1 2 3 4 5)))
+(println (= (list 1 2 3 4 5) s0))
 (println s0)
