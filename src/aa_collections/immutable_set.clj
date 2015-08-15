@@ -191,8 +191,5 @@
   (contains [_ key] false)
   (get [_ key] nil)
 
-  clojure.lang.Reversible
-  (rseq [_] nil)
-
   Counted
   )
