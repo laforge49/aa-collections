@@ -30,15 +30,23 @@
   [this value level left right cnt]
   (->AASetNode value level left right cnt (.-comparator this) (emty this)))
 
+(defn cntr [this]
+  (if (nada? this)
+    0
+    (.-cnt this)))
+
 (defn- irevise
   [this & args]
-  (let [m (apply array-map args)]
+  (let [m (apply array-map args)
+        l (get m :left (.-left this))
+        r (get m :right (.-right this))
+        c (+ 1 (cntr l) (cntr r))]
     (->AASetNode
       (get m :value (.-value this))
       (get m :level (.-level this))
-      (get m :left (.-left this))
-      (get m :right (.-right this))
-      (get m :cnt (.-cnt this))
+      l
+      r
+      c
       (.-comparator this)
       (.-nada this))))
 
@@ -51,9 +59,7 @@
     this
     (= (.-level (.-left this)) (.-level this))
     (let [l (.-left this)]
-      (irevise l
-               :right (irevise this :left (.-right l) :cnt (- (.-cnt this) (.-cnt l)))
-               :cnt (.-cnt this)))
+      (irevise l :right (irevise this :left (.-right l))))
     :else
     this))
 
@@ -68,8 +74,7 @@
     (let [r (.-right this)]
       (irevise r
                :level (+ (.-level r) 1)
-               :left (irevise this :right (.-left r) :cnt (- (.-cnt this) (.-cnt r)))
-               :cnt (.-cnt this)))
+               :left (irevise this :right (.-left r))))
     :else
     this))
 
@@ -80,15 +85,17 @@
     (let [c (.compare (.-comparator this) x (.-value this))]
       (isplit (iskew (cond
                        (< c 0)
-                       (let [l (iinsert (left-node this) x)
-                             d (- (.-cnt l) (.cnt (left-node this)))
-                             c (+ (.cnt this) d)]
-                         (irevise this :left l :cnt c))
+                       (let [ol (left-node this)
+                             l (iinsert ol x)]
+                         (if (identical? ol l)
+                           this
+                           (irevise this :left l)))
                        (> c 0)
-                       (let [r (insert (right-node this) x)
-                             d (- (.-cnt r) (.cnt (right-node this)))
-                             c (+ (.cnt this) d)]
-                         (irevise this :right r :cnt c)))))))
+                       (let [or (right-node this)
+                             r (insert or x)]
+                         (if (identical? or r)
+                           this
+                           (irevise this :right r))))))))
   )
 
 (deftype AASetNode [value level left right cnt comparator nada]
