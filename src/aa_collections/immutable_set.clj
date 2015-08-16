@@ -202,7 +202,7 @@
     (if (.sget node x)
       this
       (->AASet (.insert node x))))
-  (empty [this] (.empty node))
+  (empty [this] (->AASet (.empty node)))
   (equiv [_ o] false)
   (disjoin [_ key] nil)
   (contains [_ key] (.sget node key))
