@@ -7,24 +7,27 @@
   (sget [this x])
   (left-node [this])
   (right-node [this])
-  (emty [this])
-  (to-str [this])
   )
 
 (declare ->AASetNode)
 
-(defn nada? [x]
+(defn- nada? [x]
   (or (nil? x) (zero? (.-level x))))
 
-(defn aa-empty-set-node
+(defn- aa-empty-set-node
   ([] (aa-empty-set-node RT/DEFAULT_COMPARATOR))
   ([comparator] (->AASetNode nil 0 nil nil 0 comparator nil)))
 
+(defn- iemty [this]
+       (if (nada? this)
+         this
+         (.-nada this)))
+
 (defn- inew-node
   [this value level left right cnt]
-  (->AASetNode value level left right cnt (.-comparator this) (emty this)))
+  (->AASetNode value level left right cnt (.-comparator this) (iemty this)))
 
-(defn cntr [this]
+(defn- cntr [this]
   (if (nada? this)
     0
     (.-cnt this)))
@@ -72,7 +75,7 @@
     :else
     this))
 
-(defn iinsert
+(defn- iinsert
   [this x]
   (if (nada? this)
     (inew-node this x 1 nil nil 1)
@@ -127,20 +130,12 @@
         :else (sget (left-node this) x)))))
   (left-node [this]
     (if (nada? left)
-      (emty this)
+      (iemty this)
       left))
   (right-node [this]
     (if (nada? right)
-      (emty this)
+      (iemty this)
       right))
-  (emty [this]
-    (if (nada? this)
-      this
-      (.-nada this)))
-  (to-str [this]
-    (if (nada? this)
-      ""
-      (str (to-str (left-node this)) " " value " " (to-str (right-node this)))))
 
   Counted
   (count [this] cnt)
