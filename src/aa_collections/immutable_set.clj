@@ -5,8 +5,6 @@
 (defprotocol IAASetNode
   (snext [this x])
   (sget [this x])
-  (left-node [this])
-  (right-node [this])
   )
 
 (declare ->AASetNode)
@@ -22,6 +20,16 @@
        (if (nada? this)
          this
          (.-nada this)))
+
+(defn- left-node [this]
+           (if (nada? (.-left this))
+             (iemty this)
+             (.-left this)))
+
+(defn- right-node [this]
+            (if (nada? (.-right this))
+              (iemty this)
+              (.-right this)))
 
 (defn- inew-node
   [this value level left right cnt]
@@ -128,17 +136,6 @@
         (zero? c) x
         (> c 0) (sget (right-node this) x)
         :else (sget (left-node this) x)))))
-  (left-node [this]
-    (if (nada? left)
-      (iemty this)
-      left))
-  (right-node [this]
-    (if (nada? right)
-      (iemty this)
-      right))
-
-  Counted
-  (count [this] cnt)
   )
 
 (declare ->AASetSeq)
@@ -192,7 +189,7 @@
   (seq [_]
     (if (nada? node)
       ()
-      (->AASetSeq node nil (count node))))
+      (->AASetSeq node nil (.-cnt node))))
   (count [_]
     (count node))
   (cons [this x]
