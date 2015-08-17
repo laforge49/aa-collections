@@ -162,16 +162,14 @@
   (more [this]
     (let [f (first this)]
       (if (nil? f)
-        this
+        ()
         (->AASetSeq node f (- cnt 1)))))
   (cons [this x]
     (RT/cons x this))
   (count [this]
     cnt)
   (empty [this]
-    (if (nada? node)
-      node
-      (.-nada node)))
+    ())
   (equiv [this o]
     (if (identical? this o)
       true)
@@ -197,7 +195,9 @@
 (deftype AASet [node]
   clojure.lang.IPersistentSet
   (seq [_]
-    (->AASetSeq node nil (count node)))
+    (if (nada? node)
+      ()
+      (->AASetSeq node nil (count node))))
   (count [_]
     (count node))
   (cons [this x]
