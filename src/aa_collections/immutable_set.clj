@@ -3,7 +3,6 @@
            (java.util List)))
 
 (defprotocol IAASetNode
-  (snext [this x])
   (sget [this x])
   )
 
@@ -115,19 +114,20 @@
     (nada? (.-right this)) (.-value this)
     :else (recur (.-right this))))
 
+(defn- snext [this x]
+       (if (nada? this)
+         nil
+         (let [c (.compare (.-comparator this) x (.-value this))]
+           (cond
+             (zero? c) (ifirst (right-node this))
+             (> c 0) (snext (right-node this) x)
+             :else (let [n (snext (left-node this) x)]
+                     (if (nil? n)
+                       (.-value this)
+                       n))))))
+
 (deftype AASetNode [value level left right cnt comparator nada]
   IAASetNode
-  (snext [this x]
-    (if (nada? this)
-      nil
-      (let [c (.compare comparator x value)]
-        (cond
-          (zero? c) (ifirst (right-node this))
-          (> c 0) (snext (right-node this) x)
-          :else (let [n (snext (left-node this) x)]
-                  (if (nil? n)
-                    value
-                    n))))))
   (sget [this x]
     (if (nada? this)
       nil
