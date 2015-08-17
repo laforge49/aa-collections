@@ -55,3 +55,4 @@
 (println (conj setx 0))
 (println (get setx 4))
 (println (get setx 6))
+(println (= (sorted-set 1 2 3 4 5) setx))

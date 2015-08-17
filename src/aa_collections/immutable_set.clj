@@ -4,6 +4,7 @@
 
 (defprotocol IAASetNode
   (sfirst [this])
+  (slast [this])
   (snext [this x])
   (sget [this x])
   (left-node [this])
@@ -105,6 +106,11 @@
       (nada? this) nil
       (nada? left) value
       :else (sfirst left)))
+  (slast [this]
+    (cond
+      (nada? this) nil
+      (nada? right) value
+      :else (slast right)))
   (snext [this x]
     (if (nada? this)
       nil
@@ -206,9 +212,10 @@
   (count [_]
     (count node))
   (cons [this x]
-    (if (.sget node x)
-      this
-      (->AASet (.insert node x))))
+    (let [n (.insert node x)]
+      (if (identical? n node)
+        this
+        (->AASet n))))
   (empty [this] (->AASet (.empty node)))
   (equiv [_ o] false)
   (disjoin [_ key] nil)
