@@ -2,10 +2,6 @@
   (:import (clojure.lang RT Counted ISeq Sequential IPersistentCollection Seqable)
            (java.util List)))
 
-(defprotocol IAASetNode
-  (sget [this x])
-  )
-
 (declare ->AASetNode)
 
 (defn- nada? [x]
@@ -114,29 +110,28 @@
     (nada? (.-right this)) (.-value this)
     :else (recur (.-right this))))
 
-(defn- snext [this x]
+(defn- inext [this x]
        (if (nada? this)
          nil
          (let [c (.compare (.-comparator this) x (.-value this))]
            (cond
              (zero? c) (ifirst (right-node this))
-             (> c 0) (snext (right-node this) x)
-             :else (let [n (snext (left-node this) x)]
+             (> c 0) (inext (right-node this) x)
+             :else (let [n (inext (left-node this) x)]
                      (if (nil? n)
                        (.-value this)
                        n))))))
 
-(deftype AASetNode [value level left right cnt comparator nada]
-  IAASetNode
-  (sget [this x]
-    (if (nada? this)
-      nil
-      (let [c (.compare comparator x value)]
-        (cond
-        (zero? c) x
-        (> c 0) (sget (right-node this) x)
-        :else (sget (left-node this) x)))))
-  )
+(defn- iget [this x]
+      (if (nada? this)
+        nil
+        (let [c (.compare (.-comparator this) x (.-value this))]
+          (cond
+            (zero? c) x
+            (> c 0) (iget (right-node this) x)
+            :else (iget (left-node this) x)))))
+
+(deftype AASetNode [value level left right cnt comparator nada])
 
 (declare ->AASetSeq)
 
@@ -145,7 +140,7 @@
   (first [this]
     (if (nil? last)
       (ifirst node)
-      (snext node last)))
+      (inext node last)))
   (next [this]
     (let [m (.more this)]
       (if (nil? (first m))
