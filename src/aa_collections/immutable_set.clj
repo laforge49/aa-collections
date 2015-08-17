@@ -3,17 +3,10 @@
            (java.util List)))
 
 (defprotocol IAASetNode
-  (sfirst [this])
-  (slast [this])
   (snext [this x])
   (sget [this x])
   (left-node [this])
   (right-node [this])
-  (new-node [this value level left right cnt])
-  (revise [this & args])
-  (skew [this])
-  (split [this])
-  (insert [this x])
   (emty [this])
   (to-str [this])
   )
@@ -79,10 +72,10 @@
     :else
     this))
 
-(defn- iinsert
+(defn iinsert
   [this x]
   (if (nada? this)
-    (new-node this x 1 nil nil 1)
+    (inew-node this x 1 nil nil 1)
     (let [c (.compare (.-comparator this) x (.-value this))]
       (isplit (iskew (cond
                        (< c 0)
@@ -92,31 +85,33 @@
                            this
                            (irevise this :left l)))
                        (> c 0)
-                       (let [or (right-node this)
-                             r (insert or x)]
-                         (if (identical? or r)
+                       (let [oldr (right-node this)
+                             r (iinsert oldr x)]
+                         (if (identical? oldr r)
                            this
                            (irevise this :right r))))))))
   )
 
+(defn- ifirst [this]
+  (cond
+    (nada? this) nil
+    (nada? (.-left this)) (.-value this)
+    :else (recur (.-left this))))
+
+(defn- ilast [this]
+  (cond
+    (nada? this) nil
+    (nada? (.-right this)) (.-value this)
+    :else (recur (.-right this))))
+
 (deftype AASetNode [value level left right cnt comparator nada]
   IAASetNode
-  (sfirst [this]
-    (cond
-      (nada? this) nil
-      (nada? left) value
-      :else (sfirst left)))
-  (slast [this]
-    (cond
-      (nada? this) nil
-      (nada? right) value
-      :else (slast right)))
   (snext [this x]
     (if (nada? this)
       nil
       (let [c (.compare comparator x value)]
         (cond
-          (zero? c) (sfirst (right-node this))
+          (zero? c) (ifirst (right-node this))
           (> c 0) (snext (right-node this) x)
           :else (let [n (snext (left-node this) x)]
                   (if (nil? n)
@@ -138,11 +133,6 @@
     (if (nada? right)
       (emty this)
       right))
-  (new-node [this val lvl l r c] (inew-node this val lvl l r c))
-  (revise [this & args] (irevise this args))
-  (skew [this] (iskew this))
-  (split [this] (isplit this))
-  (insert [this x] (iinsert this x))
   (emty [this]
     (if (nada? this)
       this
@@ -162,7 +152,7 @@
   ISeq
   (first [this]
     (if (nil? last)
-      (sfirst node)
+      (ifirst node)
       (snext node last)))
   (next [this]
     (let [m (.more this)]
@@ -205,14 +195,13 @@
 (declare ->AASet)
 
 (deftype AASet [node]
-
   clojure.lang.IPersistentSet
   (seq [_]
     (->AASetSeq node nil (count node)))
   (count [_]
     (count node))
   (cons [this x]
-    (let [n (.insert node x)]
+    (let [n (iinsert node x)]
       (if (identical? n node)
         this
         (->AASet n))))
@@ -224,3 +213,8 @@
 
   Counted
   )
+
+(defn aa-empty-set
+  ([] (aa-empty-set RT/DEFAULT_COMPARATOR))
+  ([comparator]
+   (->AASet (->AASetNode nil 0 nil nil 0 comparator nil))))
