@@ -1,6 +1,6 @@
 (ns aa-collections.immutable-set
   (:import (clojure.lang RT Counted ISeq Sequential IPersistentCollection Seqable)
-           (java.util List)))
+           (java.util List Iterator)))
 
 (declare ->AASetNode)
 
@@ -131,51 +131,33 @@
             (> c 0) (iget (right-node this) x)
             :else (iget (left-node this) x)))))
 
+(defn- decrease-level [this]
+  (let [should-be (min (.-level (left-node this))
+                       (+ (.-level (right-node this) 1)))]
+    (if (>= should-be (.-level this))
+      this
+      (let [rn (right-node this)
+            rn (if (>= should-be (.-level (right-node this)))
+                       rn
+                       (irevise rn :level should-be))]
+        (irevise this :right rn :level should-be)))))
+
 (deftype AASetNode [value level left right cnt comparator nada])
 
-(declare ->AASetSeq)
-
-(deftype AASetSeq [node last cnt]
-  ISeq
-  (first [this]
-    (if (nil? last)
-      (ifirst node)
-      (inext node last)))
+(deftype AASetIterator [node ^:volatile-mutable lst ^:volatile-mutable cnt]
+  Iterator
+  (hasNext [this]
+    (> cnt 0))
   (next [this]
-    (let [m (.more this)]
-      (if (nil? (first m))
-        nil
-        m)))
-  (more [this]
-    (let [f (first this)]
-      (if (nil? f)
-        ()
-        (->AASetSeq node f (- cnt 1)))))
-  (cons [this x]
-    (RT/cons x this))
-  (count [this]
-    cnt)
-  (empty [this]
-    ())
-  (equiv [this o]
-    (if (identical? this o)
-      true)
-    (if (not (or (instance? Sequential o) (instance? List o)))
-      false)
-    (loop [m (seq o)
-          n this]
-      (let [fm (first m)
-            fn (first n)]
-        (cond
-          (not= fm fn) false
-          (nil? fm) true
-          :else (recur (.more m) (.more n))))))
-  (seq [this] this)
-
-  Counted
-
-  Sequential
+    (if (nil? lst)
+      (set! lst (ifirst node))
+      (set! lst (inext node lst)))
+      (set! cnt (- cnt 1))
+    lst)
   )
+
+(defn new-set-iseq [node]
+  (iterator-seq (->AASetIterator node nil (.-cnt node))))
 
 (declare ->AASet)
 
@@ -184,7 +166,9 @@
   (seq [_]
     (if (nada? node)
       ()
-      (->AASetSeq node nil (.-cnt node))))
+      ;(->AASetSeq node nil (.-cnt node))
+      (new-set-iseq node)
+      ))
   (count [_]
     (count node))
   (cons [this x]
