@@ -152,7 +152,7 @@
     (if (nil? lst)
       (set! lst (ifirst node))
       (set! lst (inext node lst)))
-      (set! cnt (- cnt 1))
+    (set! cnt (- cnt 1))
     lst)
   )
 
