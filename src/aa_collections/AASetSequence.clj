@@ -2,13 +2,15 @@
   (:gen-class
     :main false
     :extends clojure.lang.ASeq
+    :implements [clojure.lang.Counted]
     :constructors {[java.util.Iterator]
                    []
                    [clojure.lang.IPersistentMap Object]
                    [clojure.lang.IPersistentMap]}
     :init init
     :state state
-    :methods [^:static [create [java.util.Iterator] Object]])
+    :methods [^:static [create [java.util.Iterator] Object]]
+    :exposes-methods {count superCount})
   (:import (aa_collections AASetSequence)))
 
 (defn -create [iter]
@@ -44,3 +46,9 @@
       (-first this)
       (swap! r #(if (= s %) (-create (.-iter s)))))
     @(.-rst s)))
+
+(defn -count [this]
+  (let [iter (.iter (.-state this))]
+    (if (counted? iter)
+      (.count iter)
+      (.superCount this))))

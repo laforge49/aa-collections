@@ -15,3 +15,4 @@
 (def a5 (conj a0 1 2 3 4 5))
 (println "a5:" a5)
 (println "seq a5:" (seq a5))
+(println "?" (.count (.seq a5)))
