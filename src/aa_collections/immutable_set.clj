@@ -1,6 +1,7 @@
 (ns aa-collections.immutable-set
-  (:import (clojure.lang RT Counted ISeq Sequential IPersistentCollection Seqable)
-           (java.util List Iterator)))
+  (:import (clojure.lang RT Counted ISeq Sequential IPersistentCollection Seqable IteratorSeq)
+           (java.util List Iterator)
+           (aa_collections AASetSequence)))
 
 (declare ->AASetNode)
 
@@ -154,10 +155,16 @@
       (set! lst (inext node lst)))
     (set! cnt (- cnt 1))
     lst)
+
+  Counted
+  (count [this] cnt)
   )
 
 (defn new-set-iseq [node]
-  (iterator-seq (->AASetIterator node nil (.-cnt node))))
+  ;(iterator-seq (->AASetIterator node nil (.-cnt node)))
+  ;(IteratorSeq/create (->AASetIterator node nil (.-cnt node)))
+  (AASetSequence/create (->AASetIterator node nil (.-cnt node)))
+  )
 
 (declare ->AASet)
 
