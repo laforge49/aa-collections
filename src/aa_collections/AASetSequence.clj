@@ -4,7 +4,7 @@
     :extends clojure.lang.ASeq
     :constructors {[java.util.Iterator]
                    []
-                   [clojure.lang.IPersistentMap clojure.lang.Atom]
+                   [clojure.lang.IPersistentMap Object]
                    [clojure.lang.IPersistentMap]}
     :init init
     :state state
@@ -44,5 +44,3 @@
       (-first this)
       (swap! r #(if (= s %) (-create (.iter s)))))
     @(.-rst s)))
-
-;(new AASetSequence nil)
