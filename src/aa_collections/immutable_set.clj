@@ -93,16 +93,11 @@
                        (< c 0)
                        (let [ol (left-node this)
                              l (iinsert ol x)]
-                         (if (identical? ol l)
-                           this
-                           (irevise this :left l)))
+                         (irevise this :left l))
                        (> c 0)
                        (let [oldr (right-node this)
                              r (iinsert oldr x)]
-                         (if (identical? oldr r)
-                           this
-                           (irevise this :right r))))))))
-  )
+                         (irevise this :right r))))))))
 
 (defn- ifirst [this]
   (cond
