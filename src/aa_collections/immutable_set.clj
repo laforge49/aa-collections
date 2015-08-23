@@ -54,7 +54,8 @@
                    r
                    c
                    (.-comparator this)
-                   (.-nada this)))))
+                   (.-nada this))
+      this)))
 
 (defn- iskew
   [this]
