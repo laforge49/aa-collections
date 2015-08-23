@@ -163,10 +163,10 @@
                   (irevise this :left (idelete (left-node this) x))
                   :else
                   (if (nada? (left-node this))
-                    (do
-                      )
-                    (do
-                      )))]
+                    (let [s (successor this)]
+                      (irevise this :value s :right (idelete (right-node this) s)))
+                    (let [p (predecessor this)]
+                      (irevise this :value p :left (idelete (left-node this) p)))))]
           )))))
 
 (deftype AASetNode [value level left right cnt comparator nada])
