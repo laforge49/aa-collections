@@ -166,8 +166,17 @@
                     (let [s (successor this)]
                       (irevise this :value s :right (idelete (right-node this) s)))
                     (let [p (predecessor this)]
-                      (irevise this :value p :left (idelete (left-node this) p)))))]
-          )))))
+                      (irevise this :value p :left (idelete (left-node this) p)))))
+              t (decrease-level t)
+              t (iskew t)
+              t (irevise t :right (iskew (right-node t)))
+              r (right-node t)
+              t (if (nada? r)
+                  t
+                  (irevise t :right (irevise r :right (iskew (right-node r)))))
+              t (isplit t)
+              t (irevise t :right (isplit (right-node t)))]
+            t)))))
 
 (deftype AASetNode [value level left right cnt comparator nada])
 
