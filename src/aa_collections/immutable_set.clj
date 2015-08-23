@@ -39,17 +39,22 @@
 (defn- irevise
   [this & args]
   (let [m (apply array-map args)
+        v (get m :value (.-value this))
+        lev (get m :level (.-level this))
         l (get m :left (.-left this))
         r (get m :right (.-right this))
         c (+ 1 (cntr l) (cntr r))]
-    (->AASetNode
-      (get m :value (.-value this))
-      (get m :level (.-level this))
-      l
-      r
-      c
-      (.-comparator this)
-      (.-nada this))))
+    (if (or (not= v (.-value this))
+            (not= lev (.-level this))
+            (not= l (.-left this))
+            (not= r (.right this)))
+      (->AASetNode v
+                   lev
+                   l
+                   r
+                   c
+                   (.-comparator this)
+                   (.-nada this)))))
 
 (defn- iskew
   [this]
@@ -111,6 +116,12 @@
     (nada? (.-right this)) (.-value this)
     :else (recur (.-right this))))
 
+(defn- predecessor [this]
+  (ilast (left-node this)))
+
+(defn- successor [this]
+  (ifirst (right-node this)))
+
 (defn- inext [this x]
        (if (nada? this)
          nil
@@ -142,6 +153,19 @@
                        rn
                        (irevise rn :level should-be))]
         (irevise this :right rn :level should-be)))))
+
+(defn- idelete [this x]
+  (if (nada? this)
+    this
+    (let [c (.compare (.-comparator this) x (.-value this))
+          t (cond
+        (> c 0)
+        (irevise this :right (idelete (right-node this) x))
+        (< c 0)
+        (irevise this :left (idelete (left-node this) x))
+        :else
+        ())]
+      )))
 
 (deftype AASetNode [value level left right cnt comparator nada])
 
