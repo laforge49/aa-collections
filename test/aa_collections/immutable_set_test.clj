@@ -1,7 +1,6 @@
 (ns aa-collections.immutable-set-test
   (:require [clojure.test :refer :all]
-            [aa-collections.immutable-set :refer :all])
-  (:import (clojure.lang Reversible IPersistentSet IPersistentCollection)))
+            [aa-collections.immutable-set :refer :all]))
 
 (def a0 (aa-empty-set))
 (def c0 #{})
@@ -15,4 +14,7 @@
 (def a5 (conj a0 1 2 3 4 5))
 (println "a5:" a5)
 (println "seq a5:" (seq a5))
-(println "?" (.count (.seq a5)))
+(println (.getClass a5))
+(let [aa (.seq a5)]
+  (println (.getClass aa))
+  (println (.count aa)))

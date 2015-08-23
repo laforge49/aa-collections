@@ -161,8 +161,6 @@
   )
 
 (defn new-set-iseq [node]
-  ;(iterator-seq (->AASetIterator node nil (.-cnt node)))
-  ;(IteratorSeq/create (->AASetIterator node nil (.-cnt node)))
   (AASetSequence/create (->AASetIterator node nil (.-cnt node)))
   )
 
@@ -173,9 +171,7 @@
   (seq [_]
     (if (nada? node)
       ()
-      ;(->AASetSeq node nil (.-cnt node))
-      (new-set-iseq node)
-      ))
+      (new-set-iseq node)))
   (count [_]
     (count node))
   (cons [this x]
