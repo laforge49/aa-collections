@@ -152,16 +152,22 @@
 
 (defn- idelete [this x]
   (if (nada? this)
-    this
-    (let [c (.compare (.-comparator this) x (.-value this))
-          t (cond
-        (> c 0)
-        (irevise this :right (idelete (right-node this) x))
-        (< c 0)
-        (irevise this :left (idelete (left-node this) x))
-        :else
-        ())]
-      )))
+    nil
+    (let [c (.compare (.-comparator this) x (.-value this))]
+      (if (and (= c 0) (= 1 (.-level this)))
+        nil
+        (let [t (cond
+                  (> c 0)
+                  (irevise this :right (idelete (right-node this) x))
+                  (< c 0)
+                  (irevise this :left (idelete (left-node this) x))
+                  :else
+                  (if (nada? (left-node this))
+                    (do
+                      )
+                    (do
+                      )))]
+          )))))
 
 (deftype AASetNode [value level left right cnt comparator nada])
 
