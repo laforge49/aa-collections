@@ -8,6 +8,14 @@
 (defn- nada? [x]
   (or (nil? x) (zero? (.-level x))))
 
+(defn- snodev [this]
+  (if (nada? this)
+    ""
+    (str (snodev (.-left this)) " <" (.-value this) "> " (snodev (.-right this)))))
+
+(defn- pnodev [this dsc]
+  (println dsc (snodev this)))
+
 (defn- aa-empty-set-node
   ([] (aa-empty-set-node RT/DEFAULT_COMPARATOR))
   ([comparator] (->AASetNode nil 0 nil nil 0 comparator nil)))
@@ -140,8 +148,8 @@
             :else (iget (left-node this) x)))))
 
 (defn- decrease-level [this]
-  (let [should-be (min (.-level (left-node this))
-                       (+ (.-level (right-node this) 1)))]
+  (let [should-be (+ 1 (min (.-level (left-node this))
+                       (.-level (right-node this))))]
     (if (>= should-be (.-level this))
       this
       (let [rn (right-node this)
@@ -151,11 +159,12 @@
         (irevise this :right rn :level should-be)))))
 
 (defn- idelete [this x]
+  (pnodev this "idelete")
   (if (nada? this)
-    nil
+    this
     (let [c (.compare (.-comparator this) x (.-value this))]
       (if (and (= c 0) (= 1 (.-level this)))
-        nil
+        (iemty this)
         (let [t (cond
                   (> c 0)
                   (irevise this :right (idelete (right-node this) x))
@@ -167,7 +176,9 @@
                       (irevise this :value s :right (idelete (right-node this) s)))
                     (let [p (predecessor this)]
                       (irevise this :value p :left (idelete (left-node this) p)))))
+              _ (pnodev t "cond")
               t (decrease-level t)
+              _ (pnodev t "decrease")
               t (iskew t)
               t (irevise t :right (iskew (right-node t)))
               r (right-node t)
@@ -216,7 +227,13 @@
         (->AASet n))))
   (empty [this] (->AASet (.empty node)))
   (equiv [_ o] false)
-  (disjoin [_ key] nil)
+  (disjoin [this key]
+    (let [n (idelete node key)]
+      (if (identical? n node)
+        this
+        (do
+          (println "!")
+          (->AASet n)))))
   (contains [_ key] (.sget node key))
   (get [_ key] (.sget node key))
 

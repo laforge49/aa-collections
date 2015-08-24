@@ -11,6 +11,7 @@
 (println "first b0:" (first b0) (first d0))
 (println "rest b0:" (rest b0) (rest d0))
 (println "next b0:" (next b0) (next d0))
+(def a1 (conj a0 1))
 (def a5 (conj a0 1 2 3 4 5))
 (println "a5:" a5)
 (println "seq a5:" (seq a5))
@@ -18,3 +19,6 @@
 (let [aa (.seq a5)]
   (println (.getClass aa))
   (println (.count aa)))
+
+(println a0 1 (.disjoin a0 1))
+(println a1 0 (.disjoin a1 0))
