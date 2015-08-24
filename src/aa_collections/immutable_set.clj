@@ -49,13 +49,13 @@
   (let [m (apply array-map args)
         v (get m :value (.-value this))
         lev (get m :level (.-level this))
-        l (get m :left (.-left this))
-        r (get m :right (.-right this))
+        l (get m :left (left-node this))
+        r (get m :right (right-node this))
         c (+ 1 (cntr l) (cntr r))]
     (if (or (not= v (.-value this))
             (not= lev (.-level this))
-            (not= l (.-left this))
-            (not= r (.right this)))
+            (not= l (left-node this))
+            (not= r (right-node this)))
       (->AASetNode v
                    lev
                    l
@@ -177,6 +177,7 @@
                     (let [p (predecessor this)]
                       (irevise this :value p :left (idelete (left-node this) p)))))
               _ (pnodev t "cond")
+              _ (println (identical? this t))
               t (decrease-level t)
               _ (pnodev t "decrease")
               t (iskew t)
