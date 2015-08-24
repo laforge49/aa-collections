@@ -6,10 +6,6 @@
 (defn emty? [x]
   (or (nil? x) (zero? (.-level x))))
 
-(defn emty-node
-  ([] (emty-node RT/DEFAULT_COMPARATOR))
-  ([comparator] (->MapNode nil 0 nil nil 0 comparator nil)))
-
 (defn emty [this]
   (if (emty? this)
     this
@@ -32,3 +28,11 @@
   (if (emty? (.-left this))
     (emty this)
     (.-left this)))
+
+(defn emty-node
+  ([] (emty-node RT/DEFAULT_COMPARATOR))
+  ([comparator] (->MapNode nil 0 nil nil 0 comparator nil)))
+
+(defn new-node
+  [this t2 level left right cnt]
+  (->MapNode t2 level left right cnt (.-comparator this) (emty this)))
