@@ -159,7 +159,6 @@
         (irevise this :right rn :level should-be)))))
 
 (defn- idelete [this x]
-  (pnodev this "idelete")
   (if (nada? this)
     this
     (let [c (.compare (.-comparator this) x (.-value this))]
@@ -176,10 +175,7 @@
                       (irevise this :value s :right (idelete (right-node this) s)))
                     (let [p (predecessor this)]
                       (irevise this :value p :left (idelete (left-node this) p)))))
-              _ (pnodev t "cond")
-              _ (println (identical? this t))
               t (decrease-level t)
-              _ (pnodev t "decrease")
               t (iskew t)
               t (irevise t :right (iskew (right-node t)))
               r (right-node t)
@@ -232,9 +228,7 @@
     (let [n (idelete node key)]
       (if (identical? n node)
         this
-        (do
-          (println "!")
-          (->AASet n)))))
+        (->AASet n))))
   (contains [_ key] (.sget node key))
   (get [_ key] (.sget node key))
 

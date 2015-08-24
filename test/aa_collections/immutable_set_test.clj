@@ -22,3 +22,9 @@
 
 (println a0 1 (.disjoin a0 1))
 (println a1 0 (.disjoin a1 0))
+(println a1 1 (.disjoin a1 1))
+(println a5 1 (.disjoin a5 1))
+(println a5 2 (.disjoin a5 2))
+(println a5 3 (.disjoin a5 3))
+(println a5 4 (.disjoin a5 4))
+(println a5 5 (.disjoin a5 5))
