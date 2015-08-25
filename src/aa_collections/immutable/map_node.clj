@@ -1,10 +1,10 @@
 (ns aa-collections.immutable.map-node
-  (:import (clojure.lang RT)))
+  (:import (clojure.lang RT IMapEntry Counted)
+           (java.util Comparator)))
 
 (defprotocol IMapNode
   (emty [this])
   (cmpr [this x])
-  (cntr [this])
   (right-node [this])
   (left-node [this])
   (new-node [this t2 level left right cnt])
@@ -22,7 +22,14 @@
   ([] (emty-node RT/DEFAULT_COMPARATOR))
   ([comparator] (->MapNode nil 0 nil nil 0 comparator nil)))
 
-(deftype MapNode [t2 level left right cnt comparator nada]
+(deftype MapNode [^IMapEntry t2 level left right cnt ^Comparator comparator nada]
+
+  Counted
+
+  (count [this]
+    (if (emty? this)
+      0
+      cnt))
 
   IMapNode
 
@@ -32,12 +39,7 @@
       nada))
 
   (cmpr [this x]
-    (.compare comparator x (.getKey (t2 this))))
-
-  (cntr [this]
-    (if (emty? this)
-      0
-      cnt))
+    (.compare comparator x (.getKey t2)))
 
   (right-node [this]
     (if (emty? right)
@@ -58,7 +60,7 @@
           lev (get m :level level)
           l (get m :left (.left-node this))
           r (get m :right (.right-node this))
-          c (+ 1 (.cntr l) (.cntr r))]
+          c (+ 1 (.count l) (.count r))]
       (if (or (not= v t2)
               (not= lev level)
               (not= l (.left-node this))
