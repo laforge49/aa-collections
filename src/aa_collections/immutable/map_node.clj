@@ -11,7 +11,10 @@
   (revise [this & args])
   (skew [this])
   (split [this])
-  (insert [this t2]))
+  (insert [this t-2])
+  (predecessor-t2 [this])
+  (successor-t2 [this])
+  (next-t2 [this x]))
 
 (declare ->MapNode)
 
@@ -21,6 +24,18 @@
 (defn emty-node
   ([] (emty-node RT/DEFAULT_COMPARATOR))
   ([comparator] (->MapNode nil 0 nil nil 0 comparator nil)))
+
+(defn first-t2 [this]
+  (cond
+    (emty? this) nil
+    (emty? (.-left this)) (.-t2 this)
+    :else (recur (.-left this))))
+
+(defn last-t2 [this]
+  (cond
+    (emty? this) nil
+    (emty? (.-right this)) (.-t2 this)
+    :else (recur (.-right this))))
 
 (deftype MapNode [^IMapEntry t2 level left right cnt ^Comparator comparator nada]
 
@@ -94,17 +109,34 @@
       :else
       this))
 
-  (insert [this t2]
+  (insert [this t-2]
     (if (emty? this)
       (.new-node this t2 1 nil nil 1)
-      (let [c (.cmpr this t2)]
+      (let [c (.cmpr this (.getKey t-2))]
         (.split (.skew (cond
                          (< c 0)
                          (let [oldl (.left-node this)
-                               l (.insert oldl t2)]
+                               l (.insert oldl t-2)]
                            (.revise this :left l))
                          (> c 0)
                          (let [oldr (.right-node this)
-                               r (.insert oldr t2)]
+                               r (.insert oldr t-2)]
                            (.revise this :right r))))))))
+
+  (predecessor-t2 [this]
+    (last-t2 (.left-node this)))
+
+  (successor-t2 [this]
+    (first-t2 (.right-node this)))
+
+  (next-t2 [this x]
+    (if (emty? this)
+      nil
+      (let [c (.cmpr this x)]
+        (cond
+          (zero? c) (successor-t2 this)
+          (> c 0) (next-t2 (.right-node this) x)
+          :else (if (emty? (.left-node this))
+                  t2
+                  (next-t2 (.left-node this) x))))))
   )
