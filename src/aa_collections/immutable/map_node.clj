@@ -1,43 +1,30 @@
 (ns aa-collections.immutable.map-node
   (:import (clojure.lang RT IMapEntry Counted)
-           (java.util Comparator)))
-
-(defprotocol IMapNode
-  (emty [this])
-  (cmpr [this x])
-  (right-node [this])
-  (left-node [this])
-  (new-node [this t2 level left right cnt])
-  (revise [this & args])
-  (skew [this])
-  (split [this])
-  (insert [this t-2])
-  (predecessor-t2 [this])
-  (successor-t2 [this])
-  (next-t2 [this x]))
+           (java.util Comparator)
+           (aa_collections.immutable.imap_node IMapNode)))
 
 (declare ->MapNode)
 
-(defn emty? [x]
+(^IMapNode defn emty? [x]
   (or (nil? x) (zero? (.-level x))))
 
-(defn emty-node
+(^IMapNode defn emty-node
   ([] (emty-node RT/DEFAULT_COMPARATOR))
-  ([comparator] (->MapNode nil 0 nil nil 0 comparator nil)))
+  ([^Comparator comparator] (->MapNode nil 0 nil nil 0 comparator nil)))
 
-(defn first-t2 [this]
+(^IMapEntry defn first-t2 [^IMapNode this]
   (cond
     (emty? this) nil
     (emty? (.-left this)) (.-t2 this)
     :else (recur (.-left this))))
 
-(defn last-t2 [this]
+(^IMapEntry defn last-t2 [^IMapNode this]
   (cond
     (emty? this) nil
     (emty? (.-right this)) (.-t2 this)
     :else (recur (.-right this))))
 
-(deftype MapNode [^IMapEntry t2 level left right cnt ^Comparator comparator nada]
+(deftype MapNode [^IMapEntry t2 ^int level ^IMapNode left ^IMapNode right ^int cnt ^Comparator comparator ^IMapNode nada]
 
   Counted
 
@@ -63,7 +50,7 @@
 
   (left-node [this]
     (if (emty? (.-left this))
-      (emty this)
+      (.emty this)
       (.-left this)))
 
   (new-node [this t2 level left right cnt]
@@ -137,9 +124,9 @@
       nil
       (let [c (.cmpr this x)]
         (cond
-          (zero? c) (successor-t2 this)
-          (> c 0) (next-t2 (.right-node this) x)
+          (zero? c) (.successor-t2 this)
+          (> c 0) (.next-t2 (.right-node this) x)
           :else (if (emty? (.left-node this))
                   t2
-                  (next-t2 (.left-node this) x))))))
+                  (.next-t2 (.left-node this) x))))))
   )
