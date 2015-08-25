@@ -71,16 +71,17 @@
 
   (revise [this & args]
     (let [m (apply array-map args)
-          v (get m :t2 t2)
+          t-2 (get m :t2 t2)
           lev (get m :level level)
           l (get m :left (.left-node this))
           r (get m :right (.right-node this))
           c (+ 1 (.count l) (.count r))]
-      (if (or (not= v t2)
+      (if (or (not= (.getKey t-2) (.getkey t2))
+              (not= (.getValue t-2) (.getValue t2))
               (not= lev level)
               (not= l (.left-node this))
               (not= r (.right-node this)))
-        (.new-node this v lev l r c)
+        (.new-node this t-2 lev l r c)
         this)))
 
   (skew
@@ -121,7 +122,9 @@
                          (> c 0)
                          (let [oldr (.right-node this)
                                r (.insert oldr t-2)]
-                           (.revise this :right r))))))))
+                           (.revise this :right r))
+                         :else
+                         (.revise this :t2 t-2)))))))
 
   (predecessor-t2 [this]
     (last-t2 (.left-node this)))
