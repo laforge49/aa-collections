@@ -7,7 +7,7 @@
   (^IMapNode right-node [this])
   (^IMapNode left-node [this])
   (^IMapNode new-node [this ^IMapEntry t2 ^int level ^IMapNode left ^IMapNode right ^int cnt])
-  (^IMapNode revise [this & args])
+  (^IMapNode revise [this args])
   (^IMapNode skew [this])
   (^IMapNode split [this])
   (^IMapNode insert [this ^IMapEntry t-2])
