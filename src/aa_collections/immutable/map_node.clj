@@ -135,7 +135,7 @@
       nil
       (let [c (.cmpr this x)]
         (cond
-          (zero? c) x
+          (zero? c) t2
           (> c 0) (.get-t2 (.right-node this) x)
           :else (.get-t2 (.left-node this) x)))))
 
