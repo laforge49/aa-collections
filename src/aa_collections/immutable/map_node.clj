@@ -129,4 +129,24 @@
           :else (if (emty? (.left-node this))
                   t2
                   (.next-t2 (.left-node this) x))))))
+
+  (get-t2 [this x]
+    (if (emty? this)
+      nil
+      (let [c (.cmpr this x)]
+        (cond
+          (zero? c) x
+          (> c 0) (.get-t2 (.right-node this) x)
+          :else (.get-t2 (.left-node this) x)))))
+
+  (decrease-level [this]
+    (let [should-be (+ 1 (min (.-level (.left-node this))
+                              (.-level (.right-node this))))]
+      (if (>= should-be level)
+        this
+        (let [rn (.right-node this)
+              rn (if (>= should-be (.-level (.right-node this)))
+                   rn
+                   (.revise rn :level should-be))]
+          (.revise this :right rn :level should-be)))))
   )

@@ -13,4 +13,6 @@
   (^IMapNode insert [this ^IMapEntry t-2])
   (^IMapEntry predecessor-t2 [this])
   (^IMapEntry successor-t2 [this])
-  (^IMapEntry next-t2 [this x]))
+  (^IMapEntry next-t2 [this x])
+  (^IMapEntry get-t2 [this x])
+  (^IMapNode decrease-level [this]))
