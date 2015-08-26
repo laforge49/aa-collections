@@ -149,4 +149,32 @@
                    rn
                    (.revise rn :level should-be))]
           (.revise this :right rn :level should-be)))))
+
+  (delete [this x]
+    (if (emty? this)
+      this
+      (let [c (.cmpr this x)]
+        (if (and (= c 0) (= 1 level))
+          (.emty this)
+          (let [t (cond
+                    (> c 0)
+                    (.revise this :right (.delete (.right-node this) x))
+                    (< c 0)
+                    (.revise this :left (.delete (.left-node this) x))
+                    :else
+                    (if (emty? (.left-node this))
+                      (let [s (.successor-t2 this)]
+                        (.revise this :t2 s :right (.delete (.right-node this) s)))
+                      (let [p (.predecessor-t2 this)]
+                        (.revise this :t2 p :left (.delete (.left-node this) p)))))
+                t (.decrease-level t)
+                t (.skew t)
+                t (.revise t :right (.skew (.right-node t)))
+                r (.right-node t)
+                t (if (emty? r)
+                    t
+                    (.revise t :right (.revise r :right (.skew (.right-node r)))))
+                t (.split t)
+                t (.revise t :right (.split (.right-node t)))]
+            t)))))
   )

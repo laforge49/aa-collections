@@ -15,4 +15,5 @@
   (^IMapEntry successor-t2 [this])
   (^IMapEntry next-t2 [this x])
   (^IMapEntry get-t2 [this x])
-  (^IMapNode decrease-level [this]))
+  (^IMapNode decrease-level [this])
+  (^IMapNode delete [this x]))
