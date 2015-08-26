@@ -8,6 +8,14 @@
 (^IMapNode defn emty? [x]
   (or (nil? x) (zero? (.-level x))))
 
+(defn snodev [this]
+  (if (emty? this)
+    ""
+    (str (snodev (.-left this)) " <" (.-t2 this) "> " (snodev (.-right this)))))
+
+(defn pnodev [this dsc]
+  (println dsc (snodev this)))
+
 (^IMapNode defn emty-node
   ([] (emty-node RT/DEFAULT_COMPARATOR))
   ([^Comparator comparator] (->MapNode nil 0 nil nil 0 comparator nil)))
@@ -99,7 +107,7 @@
 
   (insert [this t-2]
     (if (emty? this)
-      (.new-node this t2 1 nil nil 1)
+      (.new-node this t-2 1 nil nil 1)
       (let [c (.cmpr this (.getKey t-2))]
         (.split (.skew (cond
                          (< c 0)
