@@ -5,28 +5,28 @@
 
 (declare ->MapNode)
 
-(^IMapNode defn emty? [x]
+(defn ^IMapNode emty? [^IMapNode x]
   (or (nil? x) (zero? (.-level x))))
 
-(defn snodev [this]
+(defn snodev [^IMapNode this]
   (if (emty? this)
     ""
-    (str (snodev (.-left this)) " <" (.-t2 this) "> " (snodev (.-right this)))))
+    (str (snodev (.-left this)) " <" (.-t2 this) " " (.level this) "> " (snodev (.-right this)))))
 
-(defn pnodev [this dsc]
+(defn pnodev [^IMapNode this dsc]
   (println dsc (snodev this)))
 
-(^IMapNode defn emty-node
+(defn ^IMapNode emty-node
   ([] (emty-node RT/DEFAULT_COMPARATOR))
   ([^Comparator comparator] (->MapNode nil 0 nil nil 0 comparator nil)))
 
-(^IMapEntry defn first-t2 [^IMapNode this]
+(defn ^IMapEntry first-t2 [^IMapNode this]
   (cond
     (emty? this) nil
     (emty? (.-left this)) (.-t2 this)
     :else (recur (.-left this))))
 
-(^IMapEntry defn last-t2 [^IMapNode this]
+(defn ^IMapEntry last-t2 [^IMapNode this]
   (cond
     (emty? this) nil
     (emty? (.-right this)) (.-t2 this)
@@ -71,7 +71,6 @@
           l (get m :left (.left-node this))
           r (get m :right (.right-node this))
           c (+ 1 (.count l) (.count r))]
-      (println t-2 "and" t2)
       (if (or (not= (.getKey t-2) (.getKey t2))
               (not= (.getValue t-2) (.getValue t2))
               (not= lev level)
@@ -89,7 +88,7 @@
       this
       (= (.-level left) level)
       (let [l left]
-        (.revise l [:right (.revise this [:left (.-right l)])]))
+        (.revise l [:right (.revise this [:left (.right-node l)])]))
       :else
       this))
 
@@ -164,7 +163,7 @@
       this
       (let [c (.cmpr this x)]
         (if (and (= c 0) (= 1 level))
-          (.emty this)
+          (.right-node this)
           (let [t (cond
                     (> c 0)
                     (.revise this [:right (.delete (.right-node this) x)])
@@ -173,16 +172,16 @@
                     :else
                     (if (emty? (.left-node this))
                       (let [s (.successor-t2 this)]
-                        (.revise this [:t2 s :right (.delete (.right-node this) s)]))
+                        (.revise this [:t2 s :right (.delete (.right-node this) (.getKey s))]))
                       (let [p (.predecessor-t2 this)]
-                        (.revise this [:t2 p :left (.delete (.left-node this) p)]))))
+                        (.revise this [:t2 p :left (.delete (.left-node this) (.getKey p))]))))
                 t (.decrease-level t)
                 t (.skew t)
                 t (.revise t [:right (.skew (.right-node t))])
                 r (.right-node t)
                 t (if (emty? r)
                     t
-                    (.revise t [:right (.revise r :right (.skew (.right-node r)))]))
+                    (.revise t [:right (.revise r [:right (.skew (.right-node r))])]))
                 t (.split t)
                 t (.revise t [:right (.split (.right-node t))])]
             t)))))
