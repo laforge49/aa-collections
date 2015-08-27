@@ -170,11 +170,8 @@
                     (< c 0)
                     (.revise this [:left (.delete (.left-node this) x)])
                     :else
-                    (if (emty? (.left-node this))
-                      (let [s (.successor-t2 this)]
-                        (.revise this [:t2 s :right (.delete (.right-node this) (.getKey s))]))
-                      (let [p (.predecessor-t2 this)]
-                        (.revise this [:t2 p :left (.delete (.left-node this) (.getKey p))]))))
+                    (let [p (.predecessor-t2 this)]
+                      (.revise this [:t2 p :left (.delete (.left-node this) (.getKey p))])))
                 t (.decrease-level t)
                 t (.skew t)
                 t (.revise t [:right (.skew (.right-node t))])
