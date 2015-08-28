@@ -24,5 +24,15 @@
 (defn ^map-entry-iterator new-map-entry-iterator [^IMapNode node]
   (->map-entry-iterator node nil (.-cnt node)))
 
-(defn ^MapSequence new-map-seq [^IMapNode node]
-  (MapSequence/create (new-map-entry-iterator node)))
+(defn ^MapSequence new-map-entry-seq [^IMapNode node]
+  (MapSequence/create (new-map-entry-iterator node) identity))
+
+(defn key-of [^IMapEntry e] (.getKey e))
+
+(defn ^MapSequence new-map-key-seq [^IMapNode node]
+  (MapSequence/create (new-map-entry-iterator node) key-of))
+
+(defn value-of [^IMapEntry e] (.getValue e))
+
+(defn ^MapSequence new-map-value-seq [^IMapNode node]
+  (MapSequence/create (new-map-entry-iterator node) value-of))

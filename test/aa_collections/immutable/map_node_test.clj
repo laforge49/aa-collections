@@ -23,10 +23,12 @@
 (pnodev (.insert m123 (new MapEntry "1" 1001)) "m123 + 1")
 (pnodev (.insert m123 (new MapEntry "1" 1010)) "m123 + 1")
 
-(println (new-map-seq m0))
-(println (new-map-seq m1))
-(println (new-map-seq m13))
-(println (new-map-seq m123))
+(println (new-map-entry-seq m0))
+(println (new-map-entry-seq m1))
+(println (new-map-entry-seq m13))
+(println (new-map-entry-seq m123))
+(println (new-map-key-seq m123))
+(println (new-map-value-seq m123))
 
 (println "")
 (def mi (new-map-entry-iterator m123))
