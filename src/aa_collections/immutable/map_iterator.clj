@@ -5,7 +5,7 @@
            (aa_collections.immutable.imap_node IMapNode)
            (aa_collections.immutable MapSequence)))
 
-(deftype map-iterator [^IMapNode node
+(deftype map-entry-iterator [^IMapNode node
                        ^{:volatile-mutable true IMapEntry true} lst
                        ^{:volatile-mutable true int true} cnt]
   Iterator
@@ -21,8 +21,8 @@
   Counted
   (count [this] cnt))
 
-(defn new-map-iterator [node]
-  (->map-iterator node nil (.-cnt node)))
+(defn ^map-entry-iterator new-map-entry-iterator [^IMapNode node]
+  (->map-entry-iterator node nil (.-cnt node)))
 
 (defn ^MapSequence new-map-seq [^IMapNode node]
-  (MapSequence/create (->map-iterator node nil (.-cnt node))))
+  (MapSequence/create (new-map-entry-iterator node)))

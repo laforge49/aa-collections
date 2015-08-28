@@ -29,7 +29,7 @@
 (println (new-map-seq m123))
 
 (println "")
-(def mi (new-map-iterator m123))
+(def mi (new-map-entry-iterator m123))
 (println (.hasNext mi))
 (println (.next mi))
 (println (.hasNext mi))
