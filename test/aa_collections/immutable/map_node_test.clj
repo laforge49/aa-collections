@@ -1,6 +1,7 @@
 (ns aa-collections.immutable.map-node-test
   (:require [clojure.test :refer :all]
-            [aa-collections.immutable.map-node :refer :all])
+            [aa-collections.immutable.map-node :refer :all]
+            [aa-collections.immutable.map-iterator :refer :all])
   (:import (clojure.lang MapEntry)))
 
 (def m0 (emty-node))
@@ -21,4 +22,19 @@
 (pnodev (.delete m123 "3") "m123 - 3")
 (pnodev (.insert m123 (new MapEntry "1" 1001)) "m123 + 1")
 (pnodev (.insert m123 (new MapEntry "1" 1010)) "m123 + 1")
+
+(println (new-map-seq m0))
+(println (new-map-seq m1))
+(println (new-map-seq m13))
+(println (new-map-seq m123))
+
+(println "")
+(def mi (new-map-iterator m123))
+(println (.hasNext mi))
+(println (.next mi))
+(println (.hasNext mi))
+(println (.next mi))
+(println (.hasNext mi))
+(println (.next mi))
+(println (.hasNext mi))
 

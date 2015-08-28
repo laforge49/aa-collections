@@ -21,5 +21,8 @@
   Counted
   (count [this] cnt))
 
-(defn ^MapSequence new-set-iseq [^IMapNode node]
+(defn new-map-iterator [node]
+  (->map-iterator node nil (.-cnt node)))
+
+(defn ^MapSequence new-map-seq [^IMapNode node]
   (MapSequence/create (->map-iterator node nil (.-cnt node))))

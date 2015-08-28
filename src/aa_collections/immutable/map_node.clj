@@ -134,9 +134,10 @@
         (cond
           (zero? c) (.successor-t2 this)
           (> c 0) (.next-t2 (.right-node this) x)
-          :else (if (emty? (.left-node this))
-                  t2
-                  (.next-t2 (.left-node this) x))))))
+          :else (let [t-2 (.next-t2 (.left-node this) x)]
+                  (if (nil? t-2)
+                    t2
+                    t-2))))))
 
   (get-t2 [this x]
     (if (emty? this)
